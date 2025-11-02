@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Compliance Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Blue-Green Palette */
+            --primary: #1e9b8a;
+            --primary-light: #2ebfa8;
+            --primary-dark: #147a6d;
+            --secondary: #4fc3f7;
+            --secondary-light: #81d4fa;
+            --accent: #00acc1;
+
+            /* Neutrals */
+            --background: #f0f7f6;
+            --surface: #ffffff;
+            --surface-hover: #f5fffe;
+            --border: #c8e6e1;
+            --border-light: #e0f2f0;
+
+            /* Text */
+            --text-primary: #1a3d38;
+            --text-secondary: #4a6b66;
+            --text-muted: #7a9691;
+
+            /* Status Colors */
+            --success: #26a69a;
+            --success-bg: #e0f2f1;
+            --warning: #ffa726;
+            --warning-bg: #fff3e0;
+            --error: #ef5350;
+            --error-bg: #ffebee;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(30, 155, 138, 0.08);
+            --shadow-md: 0 4px 12px rgba(30, 155, 138, 0.12);
+            --shadow-lg: 0 8px 24px rgba(30, 155, 138, 0.16);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+        }
+
+        .header p {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 0.01em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--surface);
+            padding: 0.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab {
+            font-family: 'Outfit', sans-serif;
+            flex: 1;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+            background: var(--surface-hover);
+        }
+
+        .tab.active {
+            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card h2 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card h3 {
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        .card h2::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        textarea {
+            font-family: 'Outfit', sans-serif;
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            letter-spacing: -0.01em;
+            transition: all 0.3s ease;
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(30, 155, 138, 0.1);
+            background: white;
+        }
+
+        textarea {
+            min-height: 220px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .btn {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 155, 138, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chat-messages {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            background: linear-gradient(to bottom, var(--background), var(--surface));
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--border-light);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            border-radius: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, var(--secondary-light) 0%, var(--secondary) 100%);
+            margin-left: 2rem;
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message.assistant {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            margin-right: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message-label {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: inherit;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .message.user .message-label {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .message.assistant .message-label {
+            color: var(--primary);
+        }
+
+        .sources {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border-light);
+        }
+
+        .sources strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .source-item {
+            background: var(--background);
+            padding: 1rem;
+            margin-top: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--primary);
+            transition: all 0.2s ease;
+        }
+
+        .source-item:hover {
+            background: var(--border-light);
+            transform: translateX(4px);
+        }
+
+        .validation-result {
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .status-badge {
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .status-compliant {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+
+        .status-needs_review {
+            background: var(--warning-bg);
+            color: var(--warning);
+            border: 2px solid var(--warning);
+        }
+
+        .status-non_compliant {
+            background: var(--error-bg);
+            color: var(--error);
+            border: 2px solid var(--error);
+        }
+
+        .violations {
+            margin-top: 1.5rem;
+        }
+
+        .violation {
+            background: var(--surface);
+            border-left: 4px solid var(--error);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .violation:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+
+        .violation.critical {
+            border-left-color: var(--error);
+            background: linear-gradient(to right, var(--error-bg), var(--surface));
+        }
+
+        .violation.major {
+            border-left-color: var(--warning);
+            background: linear-gradient(to right, var(--warning-bg), var(--surface));
+        }
+
+        .violation.minor {
+            border-left-color: var(--accent);
+            background: linear-gradient(to right, rgba(0, 172, 193, 0.1), var(--surface));
+        }
+
+        .violation-header {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .violation-severity {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .severity-critical {
+            background: var(--error);
+            color: white;
+        }
+
+        .severity-major {
+            background: var(--warning);
+            color: white;
+        }
+
+        .severity-minor {
+            background: var(--accent);
+            color: white;
+        }
+
+        .strengths {
+            margin-top: 1.5rem;
+            background: linear-gradient(135deg, var(--success-bg) 0%, var(--surface) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--success);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .strengths h4 {
+            color: var(--success);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .strengths h4::before {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.9rem;
+        }
+
+        .strengths ul {
+            margin-left: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .strengths li {
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--primary);
+        }
+
+        .spinner {
+            border: 3px solid var(--border-light);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .score {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 1rem 0;
+        }
+
+        .example-questions {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .example-questions li {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background: var(--background);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .example-questions li:hover {
+            background: var(--border-light);
+            transform: translateX(8px);
+            border-left-color: var(--accent);
+        }
+
+        pre {
+            background: var(--background);
+            padding: 1.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>CMS Compliance Assistant</h1>
+            <p>RAG-Powered Home Health Documentation Compliance Tool</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('qa')">💬 Q&A System</button>
+            <button class="tab" onclick="switchTab('validator')">✓ Note Validator</button>
+        </div>
+
+        <!-- Q&A Tab -->
+        <div id="qa-tab" class="tab-content active">
+            <div class="card">
+                <h2>Ask Questions About CMS Guidelines</h2>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="empty-state">
+                        <p>Ask a question to get started</p>
+                        <small>Your conversation will appear here</small>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="question">Your Question</label>
+                    <input type="text" id="question" placeholder="e.g., What qualifies a patient as homebound?" onkeypress="handleQuestionKeyPress(event)">
+                </div>
+                <button class="btn" onclick="askQuestion()" id="ask-btn">Ask Question</button>
+            </div>
+
+            <div class="card">
+                <h2>Example Questions</h2>
+                <ul class="example-questions">
+                    <li onclick="askExampleQuestion(this)">What are the eligibility requirements for Medicare home health services?</li>
+                    <li onclick="askExampleQuestion(this)">What qualifies a patient as homebound under CMS guidelines?</li>
+                    <li onclick="askExampleQuestion(this)">What skilled nursing services are considered reasonable and necessary?</li>
+                    <li onclick="askExampleQuestion(this)">What must be included in the physician's plan of care?</li>
+                    <li onclick="askExampleQuestion(this)">What are the supervision requirements for home health aides?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Validator Tab -->
+        <div id="validator-tab" class="tab-content">
+            <div class="card">
+                <h2>Validate Visit Note</h2>
+                <div class="input-group">
+                    <label for="visit-note">Visit Note Text</label>
+                    <textarea id="visit-note" placeholder="Paste your visit note here for compliance validation..."></textarea>
+                </div>
+                <button class="btn" onclick="validateNote()" id="validate-btn">Validate Note</button>
+
+                <div id="validation-result" class="validation-result"></div>
+            </div>
+
+            <div class="card">
+                <h2>Sample Visit Note</h2>
+                <pre>Patient: John Doe, 78 years old
+Date: 2024-01-15
+Visit Type: Skilled Nursing
+
+Chief Complaint: Post-surgical wound care following hip replacement
+
+Assessment: Patient alert and oriented x3. Surgical incision site clean,
+dry, and intact with no signs of infection. Vital signs stable.
+Patient ambulating with walker, requires minimal assistance.
+
+Interventions: Wound cleaned with normal saline, dry sterile dressing
+applied. Patient education on signs of infection provided. Medication
+compliance reviewed.
+
+Plan: Continue wound care 3x weekly. Monitor for signs of infection.
+PT evaluation recommended for mobility improvement.
+
+Nurse: Jane Smith, RN
+Time In: 10:00 AM
+Time Out: 10:45 AM</pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
